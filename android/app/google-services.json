@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "368111517765",
+    "project_id": "nimbusdata-7bf1e",
+    "storage_bucket": "nimbusdata-7bf1e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:368111517765:android:2339ef9010ebb7a3d4632c",
+        "android_client_info": {
+          "package_name": "com.example.niimbus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3UkIAP7WRKgGtUyKxt10nUCycZaQ-kAA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:368111517765:android:fcddc386f3a108bad4632c",
+        "android_client_info": {
+          "package_name": "com.example.nimbus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3UkIAP7WRKgGtUyKxt10nUCycZaQ-kAA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
