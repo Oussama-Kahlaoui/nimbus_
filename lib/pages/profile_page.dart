@@ -159,7 +159,9 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
+        backgroundColor: Colors.black,
         title: Text('Profile'),
       ),
       body: Padding(
@@ -167,18 +169,18 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(
           children: [
             ListTile(
-              title: Text('Email'),
-              subtitle: Text(email),
+              title: Text('Email', style: TextStyle(color: Colors.white)),
+              subtitle: Text(email, style: TextStyle(color: Colors.white70)),
               trailing: IconButton(
-                icon: Icon(Icons.edit),
+                icon: Icon(Icons.edit, color: Colors.white70),
                 onPressed: () => _changeEmail(context),
               ),
             ),
             ListTile(
-              title: Text('Password'),
-              subtitle: Text(password),
+              title: Text('Password', style: TextStyle(color: Colors.white)),
+              subtitle: Text(password, style: TextStyle(color: Colors.white70)),
               trailing: IconButton(
-                icon: Icon(Icons.edit),
+                icon: Icon(Icons.edit, color: Colors.white70),
                 onPressed: () => _changePassword(context),
               ),
             ),
@@ -190,12 +192,18 @@ class _ProfilePageState extends State<ProfilePage> {
                     context, '/login', (route) => false);
               },
               child: Text('Logout'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white, // Correct parameter
+              ),
             ),
           ],
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 2,
+        backgroundColor: Colors.black,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.directions),

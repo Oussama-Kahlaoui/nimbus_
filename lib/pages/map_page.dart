@@ -66,82 +66,78 @@ class _MapPageState extends State<MapPage> {
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text('Casablanca Bus Tracker'),
-    ),
-    body: Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: 'Search for a destination',
-              prefixIcon: Icon(Icons.search),
-              suffixIcon: IconButton(
-                icon: Icon(Icons.arrow_forward),
-                onPressed: _searchDestination,
-              ),
-              filled: true,
-              fillColor: Colors.white,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide.none,
-              ),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: TextField(
+          controller: _searchController,
+          decoration: InputDecoration(
+            hintText: 'Search for a destination',
+            hintStyle: TextStyle(color: Colors.white70),
+            prefixIcon: Icon(Icons.search, color: Colors.white70),
+            suffixIcon: IconButton(
+              icon: Icon(Icons.arrow_forward, color: Colors.white70),
+              onPressed: _searchDestination,
+            ),
+            filled: true,
+            fillColor: Colors.white24,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide.none,
             ),
           ),
+          style: TextStyle(color: Colors.white),
         ),
-        Expanded(
-          child: FlutterMap(
-            mapController: _mapController,
-            options: MapOptions(
-              center: _currentPosition != null
-                  ? LatLng(_currentPosition!.latitude, _currentPosition!.longitude)
-                  : LatLng(33.5731, -7.5898),
-              zoom: 12.0,
-            ),
-            children: [
-              TileLayer(
-                urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                subdomains: const ['a', 'b', 'c'],
-              ),
-              MarkerLayer(
-                markers: _busLines.map((busLine) {
-                  // This is a placeholder. You'll need to add actual coordinates to your BusLine model
-                  return Marker(
-                    point: LatLng(33.5731, -7.5898),  // Replace with actual bus line coordinates
-                    builder: (ctx) => Icon(Icons.directions_bus),
-                  );
-                }).toList(),
-              ),
-            ],
+      ),
+      body: FlutterMap(
+        mapController: _mapController,
+        options: MapOptions(
+          center: _currentPosition != null
+              ? LatLng(_currentPosition!.latitude, _currentPosition!.longitude)
+              : LatLng(33.5731, -7.5898),
+          zoom: 12.0,
+        ),
+        children: [
+          TileLayer(
+            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            subdomains: const ['a', 'b', 'c'],
           ),
-        ),
-      ],
-    ),
-    bottomNavigationBar: BottomNavigationBar(
-      currentIndex: 1,
-      items: [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.directions),
-          label: 'Directions',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.map),
-          label: 'Map',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profile',
-        ),
-      ],
-      onTap: (index) {
-        if (index == 0) Navigator.pushNamed(context, '/directions');
-        if (index == 2) Navigator.pushNamed(context, '/profile');
-      },
-    ),
-  );
+          MarkerLayer(
+            markers: _busLines.map((busLine) {
+              return Marker(
+                point: LatLng(33.5731, -7.5898),  // Replace with actual bus line coordinates
+                builder: (ctx) => Icon(Icons.directions_bus, color: Colors.white),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 1,
+        backgroundColor: Colors.black,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.directions),
+            label: 'Directions',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map),
+            label: 'Map',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        onTap: (index) {
+          if (index == 0) Navigator.pushNamed(context, '/directions');
+          if (index == 2) Navigator.pushNamed(context, '/profile');
+        },
+      ),
+    );
+  }
 }
-}  // Add this closing brace
