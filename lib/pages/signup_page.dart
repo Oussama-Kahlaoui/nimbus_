@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class SignupPage extends StatelessWidget {
+class SignupPage extends StatefulWidget {
+  @override
+  _SignupPageState createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
+  String errorMessage = '';
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Set background color to black
+      backgroundColor: Colors.black,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
@@ -30,7 +44,7 @@ class SignupPage extends StatelessWidget {
                 decoration: InputDecoration(
                   labelText: 'Email',
                   labelStyle: TextStyle(color: Colors.white),
-                  hintText: 'exemple@exemple.com',
+                  hintText: 'example@example.com',
                   hintStyle: TextStyle(color: Colors.white60),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.white),
@@ -75,12 +89,18 @@ class SignupPage extends StatelessWidget {
                 style: TextStyle(color: Colors.white),
               ),
               SizedBox(height: 24),
+              if (errorMessage.isNotEmpty)
+                Text(
+                  errorMessage,
+                  style: TextStyle(color: Colors.red),
+                ),
+              SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => _signUp(context),
                 child: Text('Sign Up'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white, // Changed from primary
-                  foregroundColor: Colors.black, // Changed from onPrimary
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
                 ),
               ),
             ],
@@ -91,8 +111,21 @@ class SignupPage extends StatelessWidget {
   }
 
   Future<void> _signUp(BuildContext context) async {
+    setState(() {
+      errorMessage = '';
+    });
+
     if (passwordController.text != confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Passwords do not match')));
+      setState(() {
+        errorMessage = 'Passwords do not match';
+      });
+      return;
+    }
+
+    if (emailController.text.isEmpty || passwordController.text.isEmpty || confirmPasswordController.text.isEmpty) {
+      setState(() {
+        errorMessage = 'All fields are required';
+      });
       return;
     }
 
@@ -102,10 +135,13 @@ class SignupPage extends StatelessWidget {
         password: passwordController.text,
       );
       print('User signed up: ${userCredential.user?.email}');
-      Navigator.pushReplacementNamed(context, '/map'); // Navigate to the map page or home
+
+      Navigator.pushReplacementNamed(context, '/profile');
     } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message ?? 'Sign up failed';
+      });
       print('Sign up error: ${e.message}');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message ?? 'Sign up failed')));
     }
   }
 }

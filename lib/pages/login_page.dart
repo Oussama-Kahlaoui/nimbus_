@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../models/bus_line.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -13,9 +12,17 @@ class _LoginPageState extends State<LoginPage> {
   String errorMessage = '';
 
   @override
+  void dispose() {
+    // Dispose controllers when the widget is disposed to free up resources
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Set background color to black
+      backgroundColor: Colors.black,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
@@ -36,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: InputDecoration(
                   labelText: 'Email',
                   labelStyle: TextStyle(color: Colors.white),
-                  hintText: 'exemple@exemple.com',
+                  hintText: 'example@example.com',
                   hintStyle: TextStyle(color: Colors.white60),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.white),
@@ -78,17 +85,17 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: () => _signIn(context),
                     child: Text('Sign In'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white, // Changed from primary
-                      foregroundColor: Colors.black, // Changed from onPrimary
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
                     ),
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/signup'); // Navigate to sign-up page
+                      Navigator.pushNamed(context, '/signup');
                     },
                     child: Text('Sign Up'),
                     style: TextButton.styleFrom(
-                      foregroundColor: Colors.white, // Changed from primary
+                      foregroundColor: Colors.white,
                     ),
                   ),
                 ],
@@ -101,9 +108,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _signIn(BuildContext context) async {
+    setState(() {
+      errorMessage = '';
+    });
+
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
       setState(() {
-        errorMessage = "Add your account. If you don't have one, click Sign Up.";
+        errorMessage = "Please enter both email and password.";
       });
       return;
     }
@@ -115,21 +126,17 @@ class _LoginPageState extends State<LoginPage> {
       );
       print('User signed in: ${userCredential.user?.email}');
 
-      // Create a BusLine object
-      BusLine busLine = BusLine(name: "Bus Line 5", route: "Casa-Port ⇔ Abouab Oulfa (par Ain Diab)");
-
-      // Navigate to the map page with the BusLine object as an argument
       Navigator.pushReplacementNamed(
         context,
-        '/map',
-        arguments: busLine,
+        '/profile',
+        arguments: userCredential.user,
       );
     } on FirebaseAuthException catch (e) {
       setState(() {
         if (e.code == 'user-not-found') {
-          errorMessage = 'Incorrect Email';
+          errorMessage = 'No user found for that email.';
         } else if (e.code == 'wrong-password') {
-          errorMessage = 'Incorrect Password';
+          errorMessage = 'Wrong password provided.';
         } else {
           errorMessage = e.message ?? 'Sign in failed';
         }
