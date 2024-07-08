@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
-import '../models/bus_line.dart';
+import '../models/bus_line.dart'; // Adjust the path if necessary
 
 class MapPage extends StatefulWidget {
   @override
@@ -13,13 +13,11 @@ class _MapPageState extends State<MapPage> {
   final TextEditingController _searchController = TextEditingController();
   final MapController _mapController = MapController();
   Position? _currentPosition;
-  List<BusLine> _busLines = [];
 
   @override
   void initState() {
     super.initState();
     _determinePosition();
-    _loadBusLines();
   }
 
   Future<void> _determinePosition() async {
@@ -48,16 +46,7 @@ class _MapPageState extends State<MapPage> {
     setState(() {});
   }
 
-  void _loadBusLines() {
-    _busLines = [
-      BusLine(name: "Bus Line 5", route: "Casa-Port ⇔ Abouab Oulfa"),
-      BusLine(name: "Bus Line 6", route: "Place Maréchal ⇔ Mèkanssa"),
-      // Add more bus lines here...
-    ];
-  }
-
   void _searchDestination() {
-    // Implement search logic here and navigate to directions page
     Navigator.pushNamed(
       context,
       '/directions',
@@ -68,75 +57,107 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: TextField(
-          controller: _searchController,
-          decoration: InputDecoration(
-            hintText: 'Search for a destination',
-            hintStyle: TextStyle(color: Colors.white70),
-            prefixIcon: Icon(Icons.search, color: Colors.white70),
-            suffixIcon: IconButton(
-              icon: Icon(Icons.arrow_forward, color: Colors.white70),
-              onPressed: _searchDestination,
-            ),
-            filled: true,
-            fillColor: Colors.white24,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide.none,
-            ),
-          ),
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
-      body: FlutterMap(
-        mapController: _mapController,
-        options: MapOptions(
-          center: _currentPosition != null
-              ? LatLng(_currentPosition!.latitude, _currentPosition!.longitude)
-              : LatLng(33.5731, -7.5898),
-          zoom: 12.0,
-        ),
+      body: Stack(
         children: [
-          TileLayer(
-            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            subdomains: const ['a', 'b', 'c'],
+          FlutterMap(
+            mapController: _mapController,
+            options: MapOptions(
+              center: _currentPosition != null
+                  ? LatLng(
+                      _currentPosition!.latitude, _currentPosition!.longitude)
+                  : LatLng(33.5731, -7.5898), // Default to Casablanca
+              zoom: 12.0,
+            ),
+            children: [
+              TileLayer(
+                urlTemplate:
+                    "https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token={accessToken}",
+                additionalOptions: {
+                  'accessToken':
+                      'pk.eyJ1Ijoia2FtZXMxIiwiYSI6ImNseWFhenF4ODA2NGIya3NiYXF6ZmZ6eTYifQ.g4c5FvhPiNkpOlLnVJP-2Q',
+                },
+              ),
+              MarkerLayer(
+                markers: busLines.map((busLine) {
+                  return Marker(
+                    point: busLine.coordinates.first,
+                    builder: (ctx) =>
+                        Icon(Icons.directions_bus, color: Colors.blue),
+                  );
+                }).toList(),
+              ),
+              PolylineLayer(
+                polylines: busLines.map((busLine) {
+                  return Polyline(
+                    points: busLine.coordinates,
+                    strokeWidth: 4.0,
+                    color: Colors.blue,
+                  );
+                }).toList(),
+              ),
+            ],
           ),
-          MarkerLayer(
-            markers: _busLines.map((busLine) {
-              return Marker(
-                point: LatLng(33.5731, -7.5898),  // Replace with actual bus line coordinates
-                builder: (ctx) => Icon(Icons.directions_bus, color: Colors.white),
-              );
-            }).toList(),
+          Positioned(
+            top: 80,
+            left: 20,
+            right: 20,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.7),
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search for a destination',
+                  hintStyle: TextStyle(color: Colors.white),
+                  prefixIcon: Icon(Icons.search, color: Colors.white),
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.arrow_forward, color: Colors.white),
+                    onPressed: _searchDestination,
+                  ),
+                  border: InputBorder.none,
+                ),
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
-        backgroundColor: Colors.black,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white70,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.directions),
-            label: 'Directions',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.7),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Map',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        onTap: (index) {
-          if (index == 0) Navigator.pushNamed(context, '/directions');
-          if (index == 2) Navigator.pushNamed(context, '/profile');
-        },
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.white.withOpacity(0.7),
+          currentIndex: 1,
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.directions),
+              label: 'Directions',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.map),
+              label: 'Map',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          onTap: (index) {
+            if (index == 0) Navigator.pushNamed(context, '/directions');
+            if (index == 2) Navigator.pushNamed(context, '/profile');
+          },
+        ),
       ),
     );
   }
